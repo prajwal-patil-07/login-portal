@@ -1,7 +1,7 @@
 import { User, AttendanceRecord, RegularizationRequest } from './types';
 
-// Admin User
-export const adminUser: User = {
+// Admin User (default values)
+const defaultAdminUser: User = {
   id: 'admin',
   employeeId: 'ADMIN001',
   name: 'Admin User',
@@ -12,109 +12,31 @@ export const adminUser: User = {
   role: 'admin',
 };
 
-// 10 Sample Users
-export const users: User[] = [
-  {
-    id: '1',
-    employeeId: 'EMP001',
-    name: 'Rajesh Kumar',
-    email: 'rajesh.kumar@hexalytics.com',
-    password: 'password123',
-    department: 'Engineering',
-    designation: 'Senior Developer',
-    role: 'employee',
-  },
-  {
-    id: '2',
-    employeeId: 'EMP002',
-    name: 'Priya Sharma',
-    email: 'priya.sharma@hexalytics.com',
-    password: 'password123',
-    department: 'Human Resources',
-    designation: 'HR Manager',
-    role: 'employee',
-  },
-  {
-    id: '3',
-    employeeId: 'EMP003',
-    name: 'Amit Patel',
-    email: 'amit.patel@hexalytics.com',
-    password: 'password123',
-    department: 'Finance',
-    designation: 'Accountant',
-    role: 'employee',
-  },
-  {
-    id: '4',
-    employeeId: 'EMP004',
-    name: 'Sneha Reddy',
-    email: 'sneha.reddy@hexalytics.com',
-    password: 'password123',
-    department: 'Marketing',
-    designation: 'Marketing Lead',
-    role: 'employee',
-  },
-  {
-    id: '5',
-    employeeId: 'EMP005',
-    name: 'Vikram Singh',
-    email: 'vikram.singh@hexalytics.com',
-    password: 'password123',
-    department: 'Engineering',
-    designation: 'Tech Lead',
-    role: 'employee',
-  },
-  {
-    id: '6',
-    employeeId: 'EMP006',
-    name: 'Ananya Gupta',
-    email: 'ananya.gupta@hexalytics.com',
-    password: 'password123',
-    department: 'Design',
-    designation: 'UI/UX Designer',
-    role: 'employee',
-  },
-  {
-    id: '7',
-    employeeId: 'EMP007',
-    name: 'Rahul Verma',
-    email: 'rahul.verma@hexalytics.com',
-    password: 'password123',
-    department: 'Sales',
-    designation: 'Sales Executive',
-    role: 'employee',
-  },
-  {
-    id: '8',
-    employeeId: 'EMP008',
-    name: 'Meera Nair',
-    email: 'meera.nair@hexalytics.com',
-    password: 'password123',
-    department: 'Operations',
-    designation: 'Operations Manager',
-    role: 'employee',
-  },
-  {
-    id: '9',
-    employeeId: 'EMP009',
-    name: 'Karthik Iyer',
-    email: 'karthik.iyer@hexalytics.com',
-    password: 'password123',
-    department: 'Engineering',
-    designation: 'Full Stack Developer',
-    role: 'employee',
-  },
-  {
-    id: '10',
-    employeeId: 'EMP010',
-    name: 'Divya Menon',
-    email: 'divya.menon@hexalytics.com',
-    password: 'password123',
-    department: 'Quality Assurance',
-    designation: 'QA Lead',
-    role: 'employee',
-  },
-];
+const ADMIN_KEY = 'hexalytics_admin';
+
+// Get admin user (with any saved updates)
+export function getAdminUser(): User {
+  if (typeof window === 'undefined') return defaultAdminUser;
+  const data = localStorage.getItem(ADMIN_KEY);
+  if (data) {
+    return { ...defaultAdminUser, ...JSON.parse(data) };
+  }
+  return defaultAdminUser;
+}
+
+// Update admin user
+export function updateAdminUser(updates: Partial<User>): User {
+  const currentAdmin = getAdminUser();
+  const updatedAdmin = { ...currentAdmin, ...updates, id: 'admin', role: 'admin' as const };
+  localStorage.setItem(ADMIN_KEY, JSON.stringify(updatedAdmin));
+  return updatedAdmin;
+}
+
+// Export adminUser as a getter for backward compatibility
+export const adminUser: User = defaultAdminUser;
+
+// Default users array (empty - all users are now added via admin panel)
+export const users: User[] = [];
 
 // All users including admin
 export const allUsers: User[] = [adminUser, ...users];
@@ -124,48 +46,11 @@ const ATTENDANCE_KEY = 'hexalytics_attendance';
 const AUTH_KEY = 'hexalytics_auth';
 const INITIALIZED_KEY = 'hexalytics_initialized';
 const REGULARIZATION_KEY = 'hexalytics_regularizations';
+const CUSTOM_USERS_KEY = 'hexalytics_custom_users';
 
-// Generate sample attendance data for all users
+// Generate sample attendance data (returns empty since no default users)
 function generateSampleData(): AttendanceRecord[] {
-  const records: AttendanceRecord[] = [];
-  const today = new Date();
-  
-  // Generate data for last 7 days for all users
-  for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - dayOffset);
-    const dateStr = date.toISOString().split('T')[0];
-    
-    // Skip weekends
-    if (date.getDay() === 0 || date.getDay() === 6) continue;
-    
-    users.forEach((user) => {
-      // Random login time between 8:30 AM and 10:30 AM
-      const loginHour = 8 + Math.floor(Math.random() * 2);
-      const loginMinute = Math.floor(Math.random() * 60);
-      const loginTime = `${loginHour.toString().padStart(2, '0')}:${loginMinute.toString().padStart(2, '0')}:00 AM`;
-      
-      // Random logout time between 5:00 PM and 7:30 PM
-      const logoutHour = 5 + Math.floor(Math.random() * 2);
-      const logoutMinute = Math.floor(Math.random() * 60);
-      const logoutTime = `${(logoutHour).toString().padStart(2, '0')}:${logoutMinute.toString().padStart(2, '0')}:00 PM`;
-      
-      // Calculate total hours (approximate)
-      const totalHours = `${8 + Math.floor(Math.random() * 2)}h ${Math.floor(Math.random() * 60)}m`;
-      
-      records.push({
-        id: `${user.id}-${dateStr}`,
-        userId: user.id,
-        date: dateStr,
-        loginTime,
-        logoutTime,
-        totalHours,
-        status: 'present',
-      });
-    });
-  }
-  
-  return records;
+  return [];
 }
 
 export function initializeSampleData(): void {
@@ -173,8 +58,8 @@ export function initializeSampleData(): void {
   
   const initialized = localStorage.getItem(INITIALIZED_KEY);
   if (!initialized) {
-    const sampleData = generateSampleData();
-    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(sampleData));
+    // Start with empty attendance records
+    localStorage.setItem(ATTENDANCE_KEY, JSON.stringify([]));
     localStorage.setItem(INITIALIZED_KEY, 'true');
   }
 }
@@ -242,14 +127,21 @@ export function setAuthUser(user: User | null): void {
 }
 
 export function authenticateUser(email: string, password: string): User | null {
-  // Check admin first
-  if (adminUser.email.toLowerCase() === email.toLowerCase() && adminUser.password === password) {
-    return adminUser;
+  // Check admin first (using current admin settings)
+  const currentAdmin = getAdminUser();
+  if (currentAdmin.email.toLowerCase() === email.toLowerCase() && currentAdmin.password === password) {
+    return currentAdmin;
   }
-  // Check regular users
-  const user = users.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-  );
+  // Check regular users (including default and custom users)
+  const allEmployeeUsers = getAllEmployees();
+  const updatedDefaults = getUpdatedDefaultUsers();
+  
+  const user = allEmployeeUsers.find((u) => {
+    // For default users, check if password was updated
+    const currentPassword = updatedDefaults[u.id]?.password || u.password;
+    return u.email.toLowerCase() === email.toLowerCase() && currentPassword === password;
+  });
+  
   return user || null;
 }
 
@@ -289,7 +181,14 @@ export function clearAllData(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(ATTENDANCE_KEY);
   localStorage.removeItem(INITIALIZED_KEY);
-  initializeSampleData();
+  localStorage.removeItem(REGULARIZATION_KEY);
+  localStorage.removeItem(CUSTOM_USERS_KEY);
+  localStorage.removeItem('hexalytics_updated_defaults');
+}
+
+export function clearAllAttendanceRecords(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ATTENDANCE_KEY, JSON.stringify([]));
 }
 
 // Check if user has already completed attendance for today (punched out)
@@ -411,9 +310,6 @@ export function checkExistingAttendance(userId: string, date: string): boolean {
   const records = getAttendanceRecords();
   return records.some((r) => r.userId === userId && r.date === date);
 }
-
-// User Management Keys
-const CUSTOM_USERS_KEY = 'hexalytics_custom_users';
 
 // Get all custom users added by admin
 export function getCustomUsers(): User[] {

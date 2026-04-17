@@ -9,6 +9,7 @@ import {
   setAuthUser,
   getRecordsByUserId,
   clearAllData,
+  clearAllAttendanceRecords,
   initializeSampleData,
   getAllRegularizations,
   approveRegularization,
@@ -24,6 +25,8 @@ import {
   employeeIdExists,
   emailExists,
   getCustomUsers,
+  getAdminUser,
+  updateAdminUser,
 } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -73,6 +76,8 @@ interface EmployeeFormData {
   department: string;
   designation: string;
   bdayDate: string;
+  mobile: string;
+  address: string;
 }
 
 const initialFormData: EmployeeFormData = {
@@ -83,6 +88,8 @@ const initialFormData: EmployeeFormData = {
   department: '',
   designation: '',
   bdayDate: "",
+  mobile: "",
+  address: "",
 };
 
 const departments = [
@@ -133,6 +140,11 @@ export default function AdminPage() {
   const [showAddAttendance, setShowAddAttendance] = useState(false);
   const [addAttendanceData, setAddAttendanceData] = useState({ userId: '', date: '', loginTime: '', logoutTime: '' });
 
+  // Admin edit state
+  const [showAdminEdit, setShowAdminEdit] = useState(false);
+  const [adminFormData, setAdminFormData] = useState({ name: '', email: '', password: '' });
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+
   useEffect(() => {
     initializeSampleData();
     const user = getAuthUser();
@@ -167,6 +179,38 @@ export default function AdminPage() {
   const handleRefreshData = () => {
     clearAllData();
     loadData();
+  };
+
+  const handleClearAttendanceRecords = () => {
+    if (confirm('Are you sure you want to delete ALL attendance records? This action cannot be undone.')) {
+      clearAllAttendanceRecords();
+      loadData();
+    }
+  };
+
+  const handleOpenAdminEdit = () => {
+    const admin = getAdminUser();
+    setAdminFormData({
+      name: admin.name,
+      email: admin.email,
+      password: admin.password,
+    });
+    setShowAdminEdit(true);
+  };
+
+  const handleSaveAdminDetails = () => {
+    if (!adminFormData.name.trim() || !adminFormData.email.trim() || !adminFormData.password.trim()) {
+      alert('All fields are required');
+      return;
+    }
+    const updatedAdmin = updateAdminUser({
+      name: adminFormData.name.trim(),
+      email: adminFormData.email.trim(),
+      password: adminFormData.password.trim(),
+    });
+    setCurrentUser(updatedAdmin);
+    setAuthUser(updatedAdmin);
+    setShowAdminEdit(false);
   };
 
   const handleApproveRegularization = (requestId: string) => {
@@ -227,16 +271,18 @@ export default function AdminPage() {
   const handleAddEmployee = () => {
     if (!validateForm()) return;
 
-    addEmployee({
-      employeeId: formData.employeeId,
-      name: formData.name,
-      email: formData.email,
-      bdayDate: formData.bdayDate,
-      password: formData.password,
-      department: formData.department,
-      designation: formData.designation,
-      role: 'employee',
-    });
+addEmployee({
+  employeeId: formData.employeeId,
+  name: formData.name,
+  email: formData.email,
+  bdayDate: formData.bdayDate,
+  mobile: formData.mobile,
+  address: formData.address,
+  password: formData.password,
+  department: formData.department,
+  designation: formData.designation,
+  role: 'employee',
+  });
 
     setFormData(initialFormData);
     setShowAddForm(false);
@@ -244,18 +290,20 @@ export default function AdminPage() {
   };
 
   // Edit employee
-  const handleEditEmployee = (user: User) => {
-    setEditingUserId(user.id);
-    setFormData({
-      employeeId: user.employeeId,
-      name: user.name,
-      email: user.email,
-      password: '',
-      department: user.department,
-      designation: user.designation,
-      bdayDate: "1995-06-15",
-    });
-    setFormErrors({});
+const handleEditEmployee = (user: User) => {
+  setEditingUserId(user.id);
+  setFormData({
+  employeeId: user.employeeId,
+  name: user.name,
+  email: user.email,
+  password: '',
+  department: user.department,
+  designation: user.designation,
+  bdayDate: user.bdayDate || "",
+  mobile: user.mobile || "",
+  address: user.address || "",
+  });
+  setFormErrors({});
   };
 
   // Save edited employee
@@ -435,6 +483,10 @@ export default function AdminPage() {
             </div>
 
             <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm" onClick={handleClearAttendanceRecords} className="gap-2 text-destructive hover:text-destructive">
+                <Trash2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Clear Records</span>
+              </Button>
               <Button variant="outline" size="sm" onClick={handleRefreshData} className="gap-2">
                 <RefreshCw className="w-4 h-4" />
                 <span className="hidden sm:inline">Refresh</span>
@@ -471,10 +523,76 @@ export default function AdminPage() {
               <p className="text-sm text-muted-foreground">{currentUser.email}</p>
             </div>
           </div>
-          <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-            Administrator
-          </span>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" onClick={handleOpenAdminEdit} className="gap-2">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Edit Login Credentials</span>
+            </Button>
+            <span className="px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
+              Administrator
+            </span>
+          </div>
         </div>
+
+        {/* Admin Edit Dialog */}
+        {showAdminEdit && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="w-5 h-5" />
+                  Edit Admin Login Credentials
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Name</label>
+                  <Input
+                    value={adminFormData.name}
+                    onChange={(e) => setAdminFormData({ ...adminFormData, name: e.target.value })}
+                    placeholder="Admin Name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <Input
+                    type="email"
+                    value={adminFormData.email}
+                    onChange={(e) => setAdminFormData({ ...adminFormData, email: e.target.value })}
+                    placeholder="admin@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Password</label>
+                  <div className="relative">
+                    <Input
+                      type={showAdminPassword ? 'text' : 'password'}
+                      value={adminFormData.password}
+                      onChange={(e) => setAdminFormData({ ...adminFormData, password: e.target.value })}
+                      placeholder="Password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminPassword(!showAdminPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" className="flex-1" onClick={() => setShowAdminEdit(false)}>
+                    Cancel
+                  </Button>
+                  <Button className="flex-1 gap-2" onClick={handleSaveAdminDetails}>
+                    <Save className="w-4 h-4" />
+                    Save Changes
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
