@@ -44,8 +44,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   };
 
   const fillEmployeeCredentials = () => {
-    setEmail('rajesh.kumar@hexalytics.com');
-    setPassword('password123');
+    setEmail('prajwal07@gmail.com');
+    setPassword('prajwal@123');
   };
 
   return (
