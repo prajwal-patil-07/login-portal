@@ -59,8 +59,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4 shadow-lg">
             <Building2 className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Hexalytics</h1>
-          <p className="text-muted-foreground mt-2">Employee Portal</p>
+          <h1 className="text-3xl font-bold text-foreground">Rsmart</h1>
+          <p className="text-muted-foreground mt-2">LogIn Portal</p>
         </div>
 
         {/* Login Card */}

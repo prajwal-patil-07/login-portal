@@ -390,7 +390,7 @@ const handleEditEmployee = (user: User) => {
     ? records.filter((r) => r.userId === selectedUser)
     : records;
 
-  const pendingRegularizations = regularizations.filter(r => r.status === 'pending');
+  const pendingRegularizations = regularizations.filter(r => r.status === 'Pending');
 
   const downloadCSV = () => {
     const headers = ['Employee ID', 'Name', 'Email', 'Department', 'Date', 'Login Time', 'Logout Time', 'Total Hours', 'Status'];
@@ -477,7 +477,7 @@ const handleEditEmployee = (user: User) => {
                 <Shield className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-card-foreground">Hexalytics Admin</h1>
+                <h1 className="text-lg font-bold text-card-foreground">Rsmart Admin</h1>
                 <p className="text-xs text-muted-foreground">Attendance Management System</p>
               </div>
             </div>
@@ -1491,11 +1491,11 @@ const handleEditEmployee = (user: User) => {
                             <td className="py-3 px-4 text-foreground max-w-xs truncate">{request.reason}</td>
                             <td className="py-3 px-4">
                               <span
-                                className={`px-2 py-1 text-xs rounded-full ${request.status === 'approved'
+                                className={`px-2 py-1 text-xs rounded-full ${request.status === 'Approved'
                                   ? 'bg-green-100 text-green-700'
-                                  : request.status === 'rejected'
+                                  : request.status === 'Rejected'
                                     ? 'bg-red-100 text-red-700'
-                                    : 'bg-yellow-100 text-yellow-700'
+                                    : 'bg-green-100 text-green-700'
                                   }`}
                               >
                                 {request.status}

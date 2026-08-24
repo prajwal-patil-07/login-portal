@@ -251,7 +251,7 @@ export function submitRegularization(
     loginTime,
     logoutTime,
     reason,
-    status: 'pending',
+    status: 'Pending',
     createdAt: new Date().toISOString(),
   };
 
@@ -266,8 +266,8 @@ export function approveRegularization(
   const requests = getRegularizationRequests();
   const request = requests.find((r) => r.id === requestId);
 
-  if (request && request.status === 'pending') {
-    request.status = 'approved';
+  if (request && request.status === 'Pending') {
+    request.status = 'Approved';
     request.reviewedBy = adminId;
     request.reviewedAt = new Date().toISOString();
 
@@ -291,8 +291,8 @@ export function rejectRegularization(requestId: string, adminId: string): void {
   const requests = getRegularizationRequests();
   const request = requests.find((r) => r.id === requestId);
 
-  if (request && request.status === 'pending') {
-    request.status = 'rejected';
+  if (request && request.status === 'Pending') {
+    request.status = 'Rejected';
     request.reviewedBy = adminId;
     request.reviewedAt = new Date().toISOString();
     saveRegularizationRequest(request);
@@ -302,7 +302,7 @@ export function rejectRegularization(requestId: string, adminId: string): void {
 export function checkExistingRegularization(userId: string, date: string): boolean {
   const requests = getRegularizationRequests();
   return requests.some(
-    (r) => r.userId === userId && r.date === date && r.status !== 'rejected'
+    (r) => r.userId === userId && r.date === date && r.status !== 'Rejected'
   );
 }
 

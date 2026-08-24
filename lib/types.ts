@@ -35,7 +35,7 @@ export interface RegularizationRequest {
   loginTime: string;
   logoutTime: string;
   reason: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'Pending' | 'Approved' | 'Rejected';
   createdAt: string;
   reviewedBy?: string;
   reviewedAt?: string;

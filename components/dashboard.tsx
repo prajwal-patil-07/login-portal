@@ -217,7 +217,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 <Building2 className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-card-foreground">Hexalytics</h1>
+                <h1 className="text-lg font-bold text-card-foreground">Rsmart</h1>
                 <p className="text-xs text-muted-foreground">Employee Portal</p>
               </div>
             </div>
@@ -255,7 +255,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground">
-            Welcome back, {user.name.split(' ')[0]}!
+            Welcome Back, {user.name}
+            {/* Welcome Back, {user.name.split(' ')[0]} */}
           </h2>
           <p className="text-muted-foreground mt-1">{formatDate(currentTime)}</p>
         </div>
@@ -286,9 +287,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             <div className="flex items-center gap-2">
               <FileEdit className="w-4 h-4" />
               My Regularizations
-              {regularizations.filter((r) => r.status === 'pending').length > 0 && (
+              {regularizations.filter((r) => r.status === 'Pending').length > 0 && (
                 <span className="bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                  {regularizations.filter((r) => r.status === 'pending').length}
+                  {regularizations.filter((r) => r.status === 'Pending').length}
                 </span>
               )}
             </div>
@@ -587,7 +588,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </p>
                     <p className="text-xs text-yellow-700 mt-1">
                       If you missed punching in on any day, you can submit a regularization
-                      request. Your request will be reviewed by HR/Admin and once approved,
+                      request. Your request will be reviewed by HR/Admin and once Approved,
                       it will be added to your attendance records.
                     </p>
                   </div>
@@ -716,16 +717,16 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           </div>
                           <span
                             className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                              req.status === 'approved'
+                              req.status === 'Approved'
                                 ? 'bg-accent/10 text-accent'
-                                : req.status === 'rejected'
+                                : req.status === 'Rejected'
                                 ? 'bg-destructive/10 text-destructive'
                                 : 'bg-yellow-100 text-yellow-800'
                             }`}
                           >
-                            {req.status === 'approved'
+                            {req.status === 'Approved'
                               ? 'Approved'
-                              : req.status === 'rejected'
+                              : req.status === 'Rejected'
                               ? 'Rejected'
                               : 'Pending'}
                           </span>
@@ -744,7 +745,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       <footer className="bg-card border-t border-border mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-center text-sm text-muted-foreground">
-            &copy; 2024 Hexalytics. All rights reserved. | Powered by greytHR
+            &copy; 2024 Rsmart. All rights reserved. | Powered by greytHR
           </p>
         </div>
       </footer>
