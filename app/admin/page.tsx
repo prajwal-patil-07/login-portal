@@ -482,6 +482,7 @@ const handleEditEmployee = (user: User) => {
               </div>
             </div>
 
+
             <div className="flex items-center gap-3">
               <Button variant="outline" size="sm" onClick={handleClearAttendanceRecords} className="gap-2 text-destructive hover:text-destructive">
                 <Trash2 className="w-4 h-4" />
